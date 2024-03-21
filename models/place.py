@@ -4,7 +4,6 @@ from models.base_model import BaseModel, Base
 from sqlalchemy import Column, Integer, Float, String, ForeignKey
 from sqlalchemy import Column, String, ForeignKey, Table
 from sqlalchemy.orm import relationship
-from models.amenity import Amenity
 
 # from models.review import Review
 from os import getenv
@@ -79,6 +78,7 @@ class Place(BaseModel, Base):
             """Getter attribute amenities that
             returns the list of Amenity instances"""
             from models import storage
+            from models.amenity import Amenity
 
             amenity_list = []
             for amenity in list(storage.all(Amenity).values()):
@@ -90,6 +90,7 @@ class Place(BaseModel, Base):
         def amenities(self, value):
             """Setter attribute amenities that handles
             append method for adding an Amenity.id"""
+            from models.amenity import Amenity
 
             if isinstance(value, Amenity):
                 self.amenity_ids.append(value.id)

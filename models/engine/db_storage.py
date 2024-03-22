@@ -42,7 +42,7 @@ class DBStorage:
             'User': User,
             'Amenity': Amenity,
             'Place': Place,
-            # 'Review': Review
+            'Review': Review
         }
 
         objects = {}

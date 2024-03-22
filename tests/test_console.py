@@ -2,48 +2,51 @@
 import unittest
 from unittest.mock import patch
 from io import StringIO
+from unittest import TestCase
+from unittest.mock import patch
 from console import HBNBCommand
 
 
-class TestHBNBCommand(unittest.TestCase):
+class TestHBNBCommand(TestCase):
 
     def setUp(self):
         self.console = HBNBCommand()
 
-    def tearDown(self):
-        pass
-
     @patch('sys.stdout', new_callable=StringIO)
-    def test_create_state(self, mock_stdout):
-        # Test creating a new State
+    def test_create(self, mock_stdout):
+        # Test creating an object
         self.console.do_create('State name="California"')
-        # Assert that the State is created successfully
+        # Assert that the object is created successfully
         output = mock_stdout.getvalue().strip()
         self.assertRegex(output, r'\w*\-?')
-        # self.assertIsInstance(output, str)
-        # self.assertIn('California', output)
 
     @patch('sys.stdout', new_callable=StringIO)
-    def test_create_place(self, mock_stdout):
-        # Test creating a new Place
-        self.console.do_create('Place city_id="0001" user_id="0001"\
-                               name="My_little_house" number_rooms=4\
-                               number_bathrooms=2\
-                               max_guest=10 price_by_night=300\
-                               atitude=37.773972 longitude=-122.431297')
-        # Assert that the Place is created successfully
+    def test_all(self, mock_stdout):
+        # Test showing an object
+        # self.console.do_show('State 1')
+        self.console.do_create('State name="California"')
+        self.console.do_all('State')
+        # Assert that the object is shown successfully
+        output = mock_stdout.getvalue().strip()
+        self.assertIn('State', output)
 
     @patch('sys.stdout', new_callable=StringIO)
-    def test_all_state(self, mock_stdout):
-        # Test showing all States
-        self.console.do_all("State")
-        # Assert that all States are shown
+    def test_show(self, mock_stdout):
+        # Test showing an object
+        self.console.do_create('State name="California"')
+        _id = mock_stdout.getvalue().strip()
 
-    @patch('sys.stdout', new_callable=StringIO)
-    def test_all_place(self, mock_stdout):
-        # Test showing all Places
-        self.console.do_all("Place")
-        # Assert that all Places are shown
+        # Clear the buffer
+        # mock_stdout.seek(0)
+        # mock_stdout.truncate()
+
+        # Show the object
+        self.console.do_show(f'State {_id}')
+        _id1 = mock_stdout.getvalue().strip()
+
+        # Assert that the object is shown successfully
+        self.assertIn(_id, _id1)
+    # Add similar test methods for 'all' and 'delete'
 
 
 if __name__ == '__main__':

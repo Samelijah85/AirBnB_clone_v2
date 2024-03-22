@@ -4,8 +4,10 @@ import unittest
 from models.base_model import BaseModel
 from models import storage
 import os
+from os import getenv
 
 
+@unittest.skipIf(getenv("HBNB_TYPE_STORAGE") == "db", "Testeing to save")
 class test_fileStorage(unittest.TestCase):
     """ Class to test the file storage method """
 
@@ -22,7 +24,7 @@ class test_fileStorage(unittest.TestCase):
         """ Remove storage file at end of tests """
         try:
             os.remove('file.json')
-        except:
+        except Exception:
             pass
 
     def test_obj_list_empty(self):
@@ -41,7 +43,6 @@ class test_fileStorage(unittest.TestCase):
                 found = True
                 break
         self.assertTrue(found, "New object was not added to __objects")
-
 
     def test_all(self):
         """ __objects is properly returned """
@@ -79,9 +80,8 @@ class test_fileStorage(unittest.TestCase):
         reloaded_obj = storage.all()
         ob_id = f'{new.__class__.__name__}' + '.' + new.id
         # Ensure an object was returned after reload and it's the correct one
-        self.assertIsNotNone(reloaded_obj, "No object was loaded after reload.")
-
-
+        self.assertIsNotNone(reloaded_obj,
+                             "No object was loaded after reload.")
 
     def test_reload_empty(self):
         """ Load from an empty file """
@@ -115,8 +115,8 @@ class test_fileStorage(unittest.TestCase):
         _id = new.id
         expected_key = f'BaseModel.{_id}'
         # Directly check if the expected key is in the keys of storage
-        self.assertIn(expected_key, storage.all().keys(), "Expected key format not found in storage keys")
-
+        self.assertIn(expected_key, storage.all().keys(),
+                      "Expected key format not found in storage keys")
 
     def test_storage_var_created(self):
         """ FileStorage object storage created """

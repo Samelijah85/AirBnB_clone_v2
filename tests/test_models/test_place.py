@@ -1,7 +1,9 @@
 #!/usr/bin/python3
 """ """
+import unittest
 from tests.test_models.test_base_model import test_basemodel
 from models.place import Place
+from os import getenv
 
 
 class test_Place(test_basemodel):
@@ -73,8 +75,24 @@ class test_Place(test_basemodel):
         new.latitude = 12.1923
         self.assertEqual(type(new.latitude), float)
 
-    def test_amenity_ids(self):
+    @unittest.skipIf(getenv("HBNB_TYPE_STORAGE") != "db", "Testeing to save")
+    def test_amenity_ids_files(self):
         """ """
         new = self.value()
         new.amenities = ['wifi', 'tv']
-        self.assertEqual(type(new.amenities), list)
+        self.assertEqual(new.amenities[0], 'wifi')
+
+    @unittest.skipIf(getenv("HBNB_TYPE_STORAGE") == "db", "Testeing to save")
+    def test_amenity_ids(self):
+        """Test that amenities can be added correctly."""
+        from models.amenity import Amenity
+        new = self.value()
+        wifi = Amenity(name="wifi")
+        tv = Amenity(name="tv")
+        new.amenities.append(wifi)
+        new.amenities.append(tv)
+        self.assertTrue(isinstance(new.amenities, list))
+        # Further checks can ensure that 'wifi' and 'tv'
+        #  are indeed in amenities
+        # self.assertIn(wifi, new.amenities)
+        # self.assertIn(tv, new.amenities)

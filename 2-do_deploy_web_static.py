@@ -28,22 +28,36 @@ def do_deploy(path):
         return False
     else:
         # Extract the base filename without the .tgz extension
-        run(f'filename=$(basename -s .tgz {path})')
+        result = run(f'filename=$(basename -s .tgz {path})')
+        if result.failed:
+            return False
 
         # Upload the .tgz file to /tmp directory on the remote server
-        put(f'{path}', '/tmp')
+        result = put(f'{path}', '/tmp')
+        if result.failed:
+            return False
 
-        # Extract the uploaded .tgz
-        # file to /data/web_static/releases/<filename> directory
-        run(f'tar -xvzf /tmp/$filename.tgz -C\
-            /data/web_static/releases/$filename')
+        # Extract the uploaded .tgz file to
+        # /data/web_static/releases/<filename> directory
+        result = run(f'tar -xvzf /tmp/$filename.tgz -C \
+                     /data/web_static/releases/$filename')
+        if result.failed:
+            return False
 
         # Remove the uploaded .tgz file from /tmp directory
-        run(f'rm /tmp/$filename.tgz')
+        result = run(f'rm /tmp/$filename.tgz')
+        if result.failed:
+            return False
 
         # Remove the current symlink
-        run(f'rm /data/web_static/current')
+        result = run(f'rm /data/web_static/current')
+        if result.failed:
+            return False
 
         # Create a symlink to the newly deployed version
-        run(f'ln -s /data/web_static/releases/$filename \
-            /data/web_static/current')
+        result = run(f'ln -s /data/web_static/releases/$filename \
+                     /data/web_static/current')
+        if result.failed:
+            return False
+
+        return True

@@ -84,3 +84,16 @@ def do_deploy(archive_path):
             return False
         print('New version deployed!')
         return True
+    
+def deploy():
+    """
+    Create and distribute an archive to web servers.
+
+    Returns:
+        False if no archive has been created, otherwise the return value
+        of do_deploy.
+    """
+    archive_path = do_pack()
+    if archive_path is None:
+        return False
+    return do_deploy(archive_path)

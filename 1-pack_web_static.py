@@ -4,11 +4,16 @@
 from fabric.api import local, task, env  # Import the task decorator
 from datetime import datetime
 
-env.hosts = ['ubuntu@34.204.81.253', 'ubuntu@52.87.154.218']
+env.hosts = ['ubuntu@54.88.80.89', 'ubuntu@54.160.119.162']
 
 
 def do_pack():
-    """generates a .tgz archive from th"""
+    """
+    Creates a tgz archive from the contents of web_static.
+
+    Returns:
+        Archive path, otherwise None
+    """
     date = datetime.now().strftime("%Y%m%d%H%M%S")
     archive_path = "versions/web_static_{}.tgz".format(date)
     local("mkdir -p versions")

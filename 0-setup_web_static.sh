@@ -16,12 +16,12 @@ fi
 # Create a directory if it doesn't exist
 
 # Variables for directory paths
-directory_name="data/"
-sud_web_static="data/web_static/"
-sud_releases="data/web_static/releases/"
-sud_shared="data/web_static/shared/"
-sud_test="data/web_static/releases/test/"
-fake_file="data/web_static/releases/test/index.html"
+directory_name="/data/"
+sud_web_static="/data/web_static/"
+sud_releases="/data/web_static/releases/"
+sud_shared="/data/web_static/shared/"
+sud_test="/data/web_static/releases/test/"
+fake_file="/data/web_static/releases/test/index.html"
 
 # Function to create directory if it doesn't exist
 create_directory() {
@@ -64,7 +64,7 @@ fi
 ln -s "$target_folder" "$link_name"
 echo "Symbolic link created: $link_name -> $target_folder"
 # Target directory
-directory="data/"
+directory="/data/"
 
 # Change ownership to ubuntu user and group, recursively
 sudo chown -R ubuntu:ubuntu "$directory"
@@ -75,7 +75,7 @@ echo "Ownership of $directory and its contents has been changed to the ubuntu us
 # Define variables
 NGINX_CONF='/etc/nginx/sites-available/default'
 BACKUP_CONF="${NGINX_CONF}.backup.$(date +%F-%H-%M-%S)"
-HBNB_STATIC_CONFIG='location /hbnb_static { alias /data/web_static/current/; }'
+HBNB_STATIC_CONFIG='\tlocation /hbnb_static {\n\t\talias /data/web_static/current/;\n\t}'
 
 # Step 1: Backup the original Nginx configuration
 echo "Backing up the original Nginx configuration..."

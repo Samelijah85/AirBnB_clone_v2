@@ -84,7 +84,8 @@ def do_deploy(archive_path):
             return False
         print('New version deployed!')
         return True
-    
+
+
 def deploy():
     """
     Create and distribute an archive to web servers.

@@ -1,6 +1,8 @@
 #!/usr/bin/python3
-"""Script that generates a .tgz archive from the contents
- of the web_static folder of AirBnB Clone repo"""
+"""
+Script that generates a .tgz archive from the contents
+of the web_static folder of AirBnB Clone repo
+"""
 from fabric.api import local, task, env, put, run  # Import the task decorator
 from datetime import datetime
 import os

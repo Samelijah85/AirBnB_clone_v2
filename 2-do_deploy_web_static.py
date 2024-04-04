@@ -37,6 +37,9 @@ def do_deploy(archive_path):
         # if result.failed:
         #     return False
 
+        result = run(f'mkdir -p /data/web_static/releases/{filename}')
+        if result.failed:
+            return False
         # Upload the .tgz file to /tmp directory on the remote server
         result = put(f'{archive_path}', '/tmp')
         if result.failed:
@@ -44,26 +47,29 @@ def do_deploy(archive_path):
 
         # Extract the uploaded .tgz file to
         # /data/web_static/releases/<filename> directory
-        result = run(f'tar -xvzf /tmp/{filename}.tgz -C \
-                     /data/web_static/releases/$filename')
+        result = run(f'tar -xzf /tmp/{filename}.tgz -C \
+                     /data/web_static/releases/{filename}')
         if result.failed:
             return False
 
         # Remove the uploaded .tgz file from /tmp directory
+        result = run(f'mv  /data/web_static/releases/{filename}/web_static/* \
+                      /data/web_static/releases/{filename}/')
         result = run(f'rm /tmp/{filename}.tgz')
+        result = run(f'rm -rf \
+            /data/web_static/releases/{filename}/web_static/')
         if result.failed:
             return False
 
         # Remove the current symlink
-        result = run(f'rm /data/web_static/current')
+        result = run(f'rm -rf /data/web_static/current')
         if result.failed:
             return False
-        run(f'echo {filename}')
 
         # Create a symlink to the newly deployed version
         result = run(f'ln -s /data/web_static/releases/{filename}\
     /data/web_static/current')
         if result.failed:
             return False
-
+        print('New version deployed!')
         return True

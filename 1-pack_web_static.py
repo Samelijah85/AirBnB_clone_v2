@@ -6,7 +6,7 @@ from datetime import datetime
 
 env.hosts = ['ubuntu@34.204.81.253', 'ubuntu@52.87.154.218']
 
-@task
+
 def do_pack():
     """generates a .tgz archive from th"""
     date = datetime.now().strftime("%Y%m%d%H%M%S")

@@ -70,3 +70,49 @@ directory="data/"
 sudo chown -R ubuntu:ubuntu "$directory"
 
 echo "Ownership of $directory and its contents has been changed to the ubuntu user and group."
+
+# Update the Nginx configurations
+# Define variables
+NGINX_CONF='/etc/nginx/sites-available/default'
+BACKUP_CONF="${NGINX_CONF}.backup.$(date +%F-%H-%M-%S)"
+HBNB_STATIC_CONFIG='location /hbnb_static { alias /data/web_static/current/; }'
+
+# Step 1: Backup the original Nginx configuration
+echo "Backing up the original Nginx configuration..."
+cp "$NGINX_CONF" "$BACKUP_CONF"
+
+# Step 2: Update Nginx configuration
+echo "Updating Nginx configuration to serve /data/web_static/current/ under /hbnb_static..."
+
+# Check if the configuration already exists
+if grep -q "location /hbnb_static" "$NGINX_CONF"; then
+    echo "HBNB_static configuration already exists. Skipping insertion."
+else
+    # Using awk to insert the configuration before the last "}" to ensure it's inside the server block
+    awk "/^}/ {print \"$HBNB_STATIC_CONFIG\"} {print}" $NGINX_CONF > temp && mv temp $NGINX_CONF
+fi
+
+# Step 3: Test Nginx configuration
+echo "Testing Nginx configuration..."
+nginx -t >/dev/null 2>&1
+
+# shellcheck disable=SC2181
+if [ "$?" -ne 0 ]; then
+    echo "Nginx configuration test failed. Reverting changes..."
+    cp "$BACKUP_CONF" "$NGINX_CONF"
+    nginx -t && echo "Reverted to the original configuration successfully."
+    exit 1
+else
+    echo "Nginx configuration test passed."
+fi
+
+# Step 4: Restart Nginx to apply changes
+echo "Restarting Nginx to apply changes..."
+sudo service nginx restart
+
+# shellcheck disable=SC2181
+if [ $? -eq 0 ]; then
+    echo "Nginx restarted successfully. Your content should now be available at /hbnb_static."
+else
+    echo "Failed to restart Nginx. Please check the system's service status."
+fi

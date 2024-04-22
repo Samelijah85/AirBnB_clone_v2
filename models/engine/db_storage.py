@@ -1,15 +1,15 @@
 #!/usr/bin/python3
 """This module defines a class to manage database storage for hbnb clone"""
+from os import getenv
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
 from models.base_model import Base
-from models.place import Place
-from models.city import City
 from models.user import User
 from models.state import State
+from models.city import City
 from models.amenity import Amenity
+from models.place import Place
 from models.review import Review
-from os import getenv
 
 
 class DBStorage:
@@ -19,23 +19,27 @@ class DBStorage:
     __session = None
 
     def __init__(self):
-        """Creates the engine"""
-        dialect = 'mysql'
-        driver = 'mysqldb'
+        """Initialize a new DBStorage instance"""
         env = getenv('HBNB_ENV')
         user = getenv('HBNB_MYSQL_USER')
-        password = getenv('HBNB_MYSQL_PWD')
+        pwd = getenv('HBNB_MYSQL_PWD')
         host = getenv('HBNB_MYSQL_HOST')
-        db_name = getenv('HBNB_MYSQL_DB')
+        db = getenv('HBNB_MYSQL_DB')
+        dialect = 'mysql'
+        driver = 'mysqldb'
+
         self.__engine = create_engine("{}+{}://{}:{}@{}/{}".format(
-            dialect, driver, user, password, host, db_name
+            dialect, driver, user, pwd, host, db
         ), pool_pre_ping=True)
 
         if env == 'test':
             Base.metadata.drop_all(self.__engine)
 
     def all(self, cls=None):
-        """Query all objects depending of the class name"""
+        """
+        Query on the current database session all objects depending of the
+        class name
+        """
         classes = {
             'State': State,
             'City': City,
@@ -60,7 +64,7 @@ class DBStorage:
         return objects
 
     def new(self, obj):
-        """Adds an object to the current database session"""
+        """Adds the object to the current database session"""
         self.__session.add(obj)
 
     def save(self):
@@ -74,8 +78,8 @@ class DBStorage:
 
     def reload(self):
         """
-        Creates all tables in the database and also creates the current
-        database session
+        - Creates all tables in the database
+        - Creates the current database session
         """
         Base.metadata.create_all(self.__engine)
         self.__session = scoped_session(
